@@ -1,42 +1,50 @@
 import { useState, useCallback } from "react";
-import Questions from "../questions.js";
+
+import QUESTIONS from "../questions.js";
 import QuestionTimer from "./QuestionTimer.jsx";
-import QuizCompleteImg from "../assets/quiz-complete.png";
+import quizCompleteImg from "../assets/quiz-complete.png";
 
 export default function Quiz() {
   const [userAnswers, setUserAnswers] = useState([]);
 
   const activeQuestionIndex = userAnswers.length;
-  const quizIsComplete = activeQuestionIndex === Questions.length;
+  const quizIsComplete = activeQuestionIndex === QUESTIONS.length;
 
   const handleSelectAnswer = useCallback(function handleSelectAnswer(
     selectedAnswer
   ) {
-    setUserAnswers((prevUserAnswers) => [...prevUserAnswers, selectedAnswer]);
+    setUserAnswers((prevUserAnswers) => {
+      return [...prevUserAnswers, selectedAnswer];
+    });
   },
   []);
 
-  const handleSkipAnswer = useCallback(() => {
-    () => handleSelectAnswer(null);
-  }, [handleSelectAnswer]);
+  const handleSkipAnswer = useCallback(
+    () => handleSelectAnswer(null),
+    [handleSelectAnswer]
+  );
 
   if (quizIsComplete) {
     return (
       <div id="summary">
-        <img src={QuizCompleteImg} alt="Trophy Icon" />
+        <img src={quizCompleteImg} alt="Trophy icon" />
         <h2>Quiz Completed!</h2>
       </div>
     );
   }
 
-  const shuffledAnswers = [...Questions[activeQuestionIndex].answers];
+  const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
   shuffledAnswers.sort(() => Math.random() - 0.5);
 
   return (
     <div id="quiz">
       <div id="question">
-        <QuestionTimer timeout={10000} onTimeout={handleSkipAnswer} />
-        <h2>{Questions[activeQuestionIndex].text}</h2>
+        <QuestionTimer
+          key={activeQuestionIndex}
+          timeout={10000}
+          onTimeout={handleSkipAnswer}
+        />
+        <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
         <ul id="answers">
           {shuffledAnswers.map((answer) => (
             <li key={answer} className="answer">
